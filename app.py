@@ -215,7 +215,7 @@ def startup_event():
 @app.get("/", response_class=HTMLResponse)
 def dashboard(request: Request):
     events = list_events(20)
-    return templates.TemplateResponse("index.html", {"request": request, "events": events})
+    return templates.TemplateResponse(request, "index.html", {"events": events})
 
 
 @app.get("/health")

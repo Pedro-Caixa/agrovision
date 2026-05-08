@@ -1,0 +1,87 @@
+body {
+    background-color: #0f1117;
+    color: #e0e0e0;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #2ecc71 !important;
+}
+
+.section-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #2ecc71;
+    margin-bottom: 0.75rem;
+}
+
+#camera-feed {
+    width: 100%;
+    border-radius: 6px;
+    border: 2px solid #1e1e2e;
+    background: #000;
+    display: block;
+    min-height: 240px;
+}
+
+#camera-status {
+    font-size: 0.8rem;
+    margin-top: 6px;
+}
+
+.event-card {
+    background-color: #1a1a2e;
+    border: none;
+    border-left: 3px solid #2ecc71;
+    border-radius: 6px;
+}
+
+.event-card .card-body {
+    padding: 0.6rem 0.9rem;
+}
+
+.event-thumb {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.event-label {
+    font-weight: 600;
+    color: #2ecc71;
+    font-size: 0.95rem;
+}
+
+.event-meta {
+    font-size: 0.78rem;
+    color: #888;
+}
+
+.badge-conf {
+    background-color: #2ecc71;
+    color: #000;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 20px;
+}
+
+.no-events {
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.status-dot.active { background-color: #2ecc71; }
+.status-dot.inactive { background-color: #e74c3c; }
