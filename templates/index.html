@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>AgroVision AI</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; background: #111; color: #eee; }
+        header {
+            background: #1a1a1a;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid #2ecc71;
+        }
+        header h1 { font-size: 1.4rem; color: #2ecc71; }
+        header span { font-size: 0.85rem; color: #aaa; }
+        .container { display: flex; gap: 16px; padding: 16px; max-width: 1400px; margin: 0 auto; }
+        .camera-panel { flex: 2; }
+        .events-panel { flex: 1; }
+        .panel-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #2ecc71;
+            margin-bottom: 8px;
+        }
+        #camera-feed {
+            width: 100%;
+            border: 2px solid #333;
+            border-radius: 4px;
+            background: #000;
+            display: block;
+        }
+        #camera-status {
+            margin-top: 6px;
+            font-size: 0.8rem;
+            color: #888;
+        }
+        .events-list { display: flex; flex-direction: column; gap: 8px; }
+        .event-card {
+            background: #1a1a1a;
+            border-left: 3px solid #2ecc71;
+            border-radius: 4px;
+            padding: 10px 12px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .event-card img {
+            width: 80px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        .event-info { flex: 1; min-width: 0; }
+        .event-label { font-weight: bold; color: #2ecc71; font-size: 0.95rem; }
+        .event-conf { font-size: 0.8rem; color: #aaa; }
+        .event-time { font-size: 0.75rem; color: #666; margin-top: 2px; }
+        .no-events { color: #555; font-size: 0.9rem; padding: 12px 0; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>AgroVision AI</h1>
+        <span>Detecção em tempo real</span>
+    </header>
+
+    <div class="container">
+        <div class="camera-panel">
+            <p class="panel-title">Camera ao vivo</p>
+            <img id="camera-feed" src="/frame" alt="Camera feed">
+            <p id="camera-status">Conectando...</p>
+        </div>
+
+        <div class="events-panel">
+            <p class="panel-title">Últimas detecções</p>
+            <div class="events-list" id="events-list">
+                {% if events %}
+                    {% for e in events %}
+                    <div class="event-card">
+                        <img src="{{ e.image_path }}" alt="{{ e.label }}" onerror="this.style.display='none'">
+                        <div class="event-info">
+                            <div class="event-label">{{ e.label }}</div>
+                            <div class="event-conf">Confiança: {{ "%.0f"|format(e.confidence * 100) }}%</div>
+                            <div class="event-time">{{ e.event_time }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-events">Nenhuma detecção registrada ainda.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const img = document.getElementById("camera-feed");
+        const status = document.getElementById("camera-status");
+
+        function refreshFrame() {
+            const next = new Image();
+            next.onload = () => {
+                img.src = next.src;
+                status.textContent = "Câmera ativa";
+                status.style.color = "#2ecc71";
+            };
+            next.onerror = () => {
+                status.textContent = "Aguardando câmera...";
+                status.style.color = "#e74c3c";
+            };
+            next.src = "/frame?t=" + Date.now();
+        }
+
+        setInterval(refreshFrame, 200);
+
+        async function refreshEvents() {
+            try {
+                const res = await fetch("/events");
+                const events = await res.json();
+                const list = document.getElementById("events-list");
+                if (events.length === 0) return;
+                list.innerHTML = events.map(e => `
+                    <div class="event-card">
+                        <img src="${e.image_path}" alt="${e.label}" onerror="this.style.display='none'">
+                        <div class="event-info">
+                            <div class="event-label">${e.label}</div>
+                            <div class="event-conf">Confiança: ${Math.round(e.confidence * 100)}%</div>
+                            <div class="event-time">${e.event_time}</div>
+                        </div>
+                    </div>
+                `).join("");
+            } catch (_) {}
+        }
+
+        setInterval(refreshEvents, 3000);
+    </script>
+</body>
+</html>
